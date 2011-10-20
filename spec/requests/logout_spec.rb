@@ -3,6 +3,8 @@ require File.expand_path(File.dirname(__FILE__)+'/../spec_helper')
 describe "visiting /sso/logout" do
   describe "when authenticated" do
     it "clears the session and redirects to /" do
+      Hancock::User.authentication_class = MyUserClass
+      
       login('atmos', 'hancock')
 
       get '/sso/logout'

@@ -6,13 +6,13 @@ module Hancock
           session[Hancock::SSO::SESSION_USER_KEY]
         end
 
-        def session_return_to
-          session[Hancock::SSO::SESSION_OID_REQ_KEY] &&
-          session[Hancock::SSO::SESSION_OID_REQ_KEY].return_to
+        def return_to
+          (session[Hancock::SSO::SESSION_OID_REQ_KEY] &&
+          session[Hancock::SSO::SESSION_OID_REQ_KEY].return_to) || '/'
         end
 
         def ensure_authenticated
-          raise Hancock::SSO::Unauthenticated unless session_user
+          unauthenticated! unless session_user
         end
       end
 
@@ -21,19 +21,20 @@ module Hancock
 
         app.get '/sso/login' do
           ensure_authenticated
-          raise Hancock::SSO::RouteMeHome
         end
 
         app.post '/sso/login' do
-          user = ::Hancock::User.authenticated?(params['username'], params['password'])
-          session[Hancock::SSO::SESSION_USER_KEY] = params['username']
-          ensure_authenticated
-          redirect session_return_to || raise(Hancock::SSO::RouteMeHome)
+          if ::Hancock::User.authenticated?(params['username'], params['password'])
+            session[Hancock::SSO::SESSION_USER_KEY] = params['username']
+            redirect return_to
+          else
+            ensure_authenticated
+          end
         end
 
         app.get '/sso/logout' do
           session.clear
-          raise Hancock::SSO::LogMeOut
+          redirect "/"
         end
       end
     end

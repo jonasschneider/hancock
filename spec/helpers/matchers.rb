@@ -6,7 +6,7 @@ module Hancock
 
       def matches?(target)
         target.should have_selector("form[action='/sso/login'][method='POST']")
-        target.should have_selector("form[action='/sso/login'][method='POST'] input[type='text'][name='email']")
+        target.should have_selector("form[action='/sso/login'][method='POST'] input[type='text'][name='username']")
         target.should have_selector("form[action='/sso/login'][method='POST'] input[type='password'][name='password']")
         target.should have_selector("form[action='/sso/login'][method='POST'] input[type='submit'][value='Login']")
         true
@@ -65,7 +65,7 @@ module Hancock
         redirect_params['openid.claimed_id'].should       == @identity_url
         redirect_params['openid.identity'].should         == @identity_url
 
-        redirect_params['openid.sreg.email'].should       == @username
+        redirect_params['openid.sreg.username'].should    == @username
 
         redirect_params['openid.sig'].should_not be_nil
         redirect_params['openid.signed'].should_not be_nil
@@ -138,7 +138,7 @@ module Hancock
         redirect_params['openid.claimed_id'].should       == @identity_url
         redirect_params['openid.identity'].should         == @identity_url
 
-        redirect_params['openid.sreg.email'].should       == @username
+        redirect_params['openid.sreg.username'].should    == @username
 
         redirect_params['openid.sig'].should_not be_nil
         redirect_params['openid.signed'].should_not be_nil

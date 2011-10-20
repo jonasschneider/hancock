@@ -3,15 +3,11 @@ module Hancock
     module OpenIdServer
       module Helpers
         def server
-          if @server.nil?
-            store = OpenID::Store::Filesystem.new(File.join(Dir.tmpdir, 'openid-store'))
-            @server = OpenID::Server::Server.new(store, absolute_url('/sso'))
-          end
-          @server
+          @server ||= OpenID::Server::Server.new($openid_store, absolute_url('/sso'))
         end
 
-        def url_for_user
-          absolute_url("/sso/users/#{session_user}")
+        def url_for_user user = session_user
+          absolute_url("/sso/users/#{user}")
         end
 
         def render_response(oidresp)
@@ -41,7 +37,31 @@ module Hancock
 
       def self.registered(app)
         app.helpers Helpers
+        
+        app.get '/xrds' do
+        <<-XRDS
+<?xml version="1.0" encoding="UTF-8"?>
+<xrds:XRDS
+    xmlns:xrds="xri://$xrds"
+    xmlns:ux="http://specs.openid.net/extensions/ux/1.0"
+    xmlns="xri://$xrd*($v*2.0)">
+  <XRD>
 
+    <Service priority="0">
+      <Type>http://specs.openid.net/auth/2.0/server</Type>
+      <Type>http://openid.net/sreg/1.0</Type>
+      <URI priority="0">http://#{request.host_with_port}/sso</URI>
+    </Service>
+
+    <Service>
+      <Type>http://specs.openid.net/extensions/ux/1.0/friendlyname</Type>
+      <ux:friendlyname>FichteID</ux:friendlyname>
+    </Service>
+  </XRD>
+</xrds:XRDS>
+XRDS
+        end
+        
         [:get, :post].each do |meth|
           app.send(meth, '/sso') do
             begin
@@ -49,7 +69,7 @@ module Hancock
             rescue OpenID::Server::ProtocolError => e
               oidreq = session[Hancock::SSO::SESSION_OID_REQ_KEY]
             end
-            raise Hancock::SSO::BadRequest unless oidreq
+            halt 400, "Bad request" unless oidreq
 
             oidresp = nil
             if oidreq.kind_of?(OpenID::Server::CheckIDRequest)
@@ -60,7 +80,8 @@ module Hancock
               oidreq.identity = oidreq.claimed_id = url_for_user
               oidresp = oidreq.answer(true, nil, oidreq.identity)
               sreg_data = {
-                'email'      => session[Hancock::SSO::SESSION_USER_KEY]
+                'username'  => session[Hancock::SSO::SESSION_USER_KEY],
+                'name'      => 'Real name of '+session[Hancock::SSO::SESSION_USER_KEY]
               }
               oidresp.add_extension(OpenID::SReg::Response.new(sreg_data))
             else # associate

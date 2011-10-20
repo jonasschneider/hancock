@@ -2,7 +2,7 @@ module Hancock
   class UserConfigurationError < StandardError; end
 
   class AuthenticationUser
-    def self.authenticated?(password)
+    def self.authenticated?(usernae, password)
       raise UserConfigurationError, "You need to setup a Hancock::User authentication class"
     end
   end
