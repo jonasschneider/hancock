@@ -7,12 +7,14 @@ module Hancock
         end
 
         def return_to
-          (session[Hancock::SSO::SESSION_OID_REQ_KEY] &&
-          session[Hancock::SSO::SESSION_OID_REQ_KEY].return_to) || '/'
+          session['return_to'] || '/'
         end
 
         def ensure_authenticated
-          unauthenticated! unless session_user
+          unless session_user
+            session['return_to'] = request.url
+            unauthenticated! 
+          end
         end
       end
 

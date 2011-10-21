@@ -20,7 +20,7 @@ helpers do
 end
 
 get '/' do
-  oidreq = openid_consumer.begin "http://#{request.host}:9292/"
+  oidreq = openid_consumer.begin ARGV[0] || "http://titan:9292/"
   
   return_to = "http://#{request.host_with_port}/complete"
   realm = "http://#{request.host_with_port}"
