@@ -6,6 +6,5 @@ webrat.log
 .DS_Store
 bin
 vendor
-*.gemspec
 .bundle
 *.rbc
