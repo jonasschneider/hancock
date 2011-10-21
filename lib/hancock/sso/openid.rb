@@ -55,10 +55,8 @@ module Hancock
 
               oidreq.identity = oidreq.claimed_id = url_for_user
               oidresp = oidreq.answer(true, nil, oidreq.identity)
-              sreg_data = {
-                'username'  => session[Hancock::SSO::SESSION_USER_KEY],
-                'name'      => 'Real name of '+session[Hancock::SSO::SESSION_USER_KEY]
-              }
+              sreg_data = session[SESSION_USER_INFO_KEY]
+              
               oidresp.add_extension(OpenID::SReg::Response.new(sreg_data))
             else # associate
               oidresp = server.handle_request(oidreq) 

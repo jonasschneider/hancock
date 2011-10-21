@@ -28,6 +28,7 @@ module Hancock
         app.post '/sso/login' do
           if settings.authentication_delegate.authenticated?(params['username'], params['password'])
             session[Hancock::SSO::SESSION_USER_KEY] = params['username']
+            session[Hancock::SSO::SESSION_USER_INFO_KEY] = settings.authentication_delegate.info_for(params['username']) || {}
             redirect return_to
           else
             params['failed_auth'] = true

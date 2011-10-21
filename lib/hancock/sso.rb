@@ -9,6 +9,7 @@ $openid_store = OpenID::Store::Memory.new
 module Hancock
   module SSO
     SESSION_USER_KEY      = 'hancock.user.id'
+    SESSION_USER_INFO_KEY = 'hancock.user.info'
     SESSION_OID_REQ_KEY   = 'hancock.oidreq.id'
     SESSION_RETURN_TO_KEY = 'hancock.return_to'
 
