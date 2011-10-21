@@ -22,15 +22,16 @@ module Hancock
         app.helpers Helpers
 
         app.get '/sso/login' do
-          ensure_authenticated
+          unauthenticated!
         end
 
         app.post '/sso/login' do
-          if ::Hancock::User.authenticated?(params['username'], params['password'])
+          if settings.authentication_delegate.authenticated?(params['username'], params['password'])
             session[Hancock::SSO::SESSION_USER_KEY] = params['username']
             redirect return_to
           else
-            ensure_authenticated
+            params['failed_auth'] = true
+            unauthenticated!
           end
         end
 

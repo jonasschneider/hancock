@@ -16,6 +16,7 @@ module Hancock
       enable :sessions
       
       set :hancock_server_name, 'Hancock Single Sign On'
+      set :authentication_delegate, Hancock::User
       
       def unauthenticated!
         halt 403, "Unauthenticated"
