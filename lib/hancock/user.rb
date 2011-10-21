@@ -19,12 +19,5 @@ module Hancock
     def self.authenticated?(username, password)
       authentication_class.authenticated?(username, password)
     end
-    
-    def self.info_for(username)
-      {
-        'username' => username,
-        'name'=> 'Real name of '+username
-      }      
-    end
   end
 end

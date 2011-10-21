@@ -5,7 +5,11 @@ module Hancock
         def session_user
           session[Hancock::SSO::SESSION_USER_KEY]
         end
-
+        
+        def session_user_info
+          session[Hancock::SSO::SESSION_USER_INFO_KEY]
+        end
+        
         def return_to
           session['return_to'] || '/'
         end
@@ -26,9 +30,9 @@ module Hancock
         end
 
         app.post '/sso/login' do
-          if settings.authentication_delegate.authenticated?(params['username'], params['password'])
+          if info = settings.authentication_delegate.authenticated?(params['username'], params['password'])
             session[Hancock::SSO::SESSION_USER_KEY] = params['username']
-            session[Hancock::SSO::SESSION_USER_INFO_KEY] = settings.authentication_delegate.info_for(params['username']) || {}
+            session[Hancock::SSO::SESSION_USER_INFO_KEY] = (info == true) ? {} : info
             redirect return_to
           else
             params['failed_auth'] = true

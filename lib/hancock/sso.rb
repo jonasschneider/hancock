@@ -14,8 +14,6 @@ module Hancock
     SESSION_RETURN_TO_KEY = 'hancock.return_to'
 
     class App < Sinatra::Base
-      enable :sessions
-      
       set :hancock_server_name, 'Hancock Single Sign On'
       set :authentication_delegate, Hancock::User
       
