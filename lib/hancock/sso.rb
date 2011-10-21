@@ -20,6 +20,10 @@ module Hancock
       def unauthenticated!
         halt 403, "Unauthenticated"
       end
+      
+      def authorize_openid_request!
+        # halt on unauthorized requests here
+      end
 
       register ::Hancock::SSO::Sessions
       register ::Hancock::SSO::OpenIdServer

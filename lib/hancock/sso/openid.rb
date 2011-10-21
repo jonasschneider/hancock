@@ -40,6 +40,8 @@ module Hancock
         
         [:get, :post].each do |meth|
           app.send(meth, '/sso') do
+            authorize_openid_request!
+            
             begin
               oidreq = server.decode_request(params)
             rescue OpenID::Server::ProtocolError => e
