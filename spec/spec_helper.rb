@@ -3,7 +3,7 @@ require 'rubygems'
 require 'bundler'
 project_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
-Bundler.setup(:runtime, :test)
+Bundler.setup(:default, :test)
 require File.expand_path(File.join('..', '..', 'lib', 'hancock'), __FILE__)
 
 Bundler.require(:test)
@@ -19,7 +19,11 @@ end
 
 class MyUserClass
   def self.authenticated?(username, password)
-    username == 'atmos' && password == 'hancock'
+    if username == 'atmos' && password == 'hancock'
+      { username: 'atmos' } 
+    else
+      false
+    end
   end
 end
 

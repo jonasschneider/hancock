@@ -59,6 +59,12 @@ describe "visiting /sso" do
 
         get "/sso", params
         last_response.body.should be_a_login_form
+        
+        login(user, password)
+        
+        follow_redirect!
+        
+        last_response.should be_a_redirect_to_the_consumer(consumer_url, user)
       end
     end
   end

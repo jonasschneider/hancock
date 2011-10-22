@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hancock (0.2.0)
+    hancock (0.3.0)
       guid (~> 0.1.1)
       haml (~> 3.0.0)
       json

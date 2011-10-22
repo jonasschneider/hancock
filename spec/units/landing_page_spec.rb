@@ -1,11 +1,5 @@
 require File.expand_path(File.dirname(__FILE__)+'/../spec_helper')
 
-class MyUserClass
-  def self.authenticated?(username, password)
-    username == 'atmos' && password == 'hancock'
-  end
-end
-
 describe "visiting /" do
   before(:all) do
     Hancock::User.authentication_class = MyUserClass
