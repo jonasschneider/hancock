@@ -18,6 +18,7 @@ module Hancock
 
           case web_response.code
           when 302
+            clear_return_to!
             redirect web_response.headers['location']
           else
             web_response.body
@@ -52,6 +53,7 @@ module Hancock
             oidresp = nil
             if oidreq.kind_of?(OpenID::Server::CheckIDRequest)
               session[Hancock::SSO::SESSION_OID_REQ_KEY] = oidreq
+              session['openid_realm'] = params["openid.realm"]
 
               ensure_authenticated
 
