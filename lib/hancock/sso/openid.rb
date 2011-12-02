@@ -41,8 +41,6 @@ module Hancock
         
         [:get, :post].each do |meth|
           app.send(meth, '/sso') do
-            authorize_openid_request!
-            
             begin
               oidreq = server.decode_request(params)
             rescue OpenID::Server::ProtocolError => e
@@ -56,6 +54,7 @@ module Hancock
               session['openid_realm'] = params["openid.realm"]
 
               ensure_authenticated
+              authorize_openid_request!
 
               oidreq.identity = oidreq.claimed_id = url_for_user
               oidresp = oidreq.answer(true, nil, oidreq.identity)

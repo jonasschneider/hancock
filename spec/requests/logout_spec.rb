@@ -9,14 +9,14 @@ describe "visiting /sso/logout" do
 
       get '/sso/logout'
       last_response.status.should eql(302)
-      last_response.headers['Location'].should eql('http://example.org/')
+      last_response.headers['Location'].should eql('http://example.org/?logged_out=true')
     end
   end
   describe "when unauthenticated" do
     it "redirects to /" do
       get '/sso/logout'
       last_response.status.should eql(302)
-      last_response.headers['Location'].should eql('http://example.org/')
+      last_response.headers['Location'].should eql('http://example.org/?logged_out=true')
     end
   end
 end
