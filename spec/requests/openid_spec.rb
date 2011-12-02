@@ -68,7 +68,7 @@ describe "visiting /sso" do
       end
     end
   end
-
+  
   describe "with openid mode of checkid_immediate" do
     describe "unauthenticated user" do
       it "should require authentication" do
@@ -99,6 +99,18 @@ describe "visiting /sso" do
           login(user, password)
           get "/sso", params
           last_response.should be_an_openid_immediate_response(consumer_url, user)
+        end
+      end
+      
+      describe "using POST" do
+        it "redirects to the GET version" do
+          params = {
+            "test"         => "a"
+          }
+
+          login(user, password)
+          post "/sso", params
+          last_response.headers["Location"].should == 'http://example.org/sso?test=a'
         end
       end
     end
