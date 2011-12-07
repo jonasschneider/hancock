@@ -39,35 +39,33 @@ module Hancock
       def self.registered(app)
         app.helpers Helpers
         
-        app.post '/sso' do
-          redirect '/sso?'+URI.encode_www_form(params)
-        end
-        
-        app.get '/sso' do
-          begin
-            oidreq = server.decode_request(params)
-          rescue OpenID::Server::ProtocolError => e
-            oidreq = session[Hancock::SSO::SESSION_OID_REQ_KEY]
+        [:get, :post].each do |meth|
+          app.send(meth, '/sso') do
+            begin
+              oidreq = server.decode_request(params)
+            rescue OpenID::Server::ProtocolError => e
+              oidreq = session[Hancock::SSO::SESSION_OID_REQ_KEY]
+            end
+            halt 400, "Bad request" unless oidreq
+
+            oidresp = nil
+            if oidreq.kind_of?(OpenID::Server::CheckIDRequest)
+              session[Hancock::SSO::SESSION_OID_REQ_KEY] = oidreq
+              session['openid_realm'] = params["openid.realm"]
+
+              ensure_authenticated
+              authorize_openid_request!
+
+              oidreq.identity = oidreq.claimed_id = url_for_user
+              oidresp = oidreq.answer(true, nil, oidreq.identity)
+              sreg_data = session[SESSION_USER_INFO_KEY]
+              
+              oidresp.add_extension(OpenID::SReg::Response.new(sreg_data))
+            else # associate
+              oidresp = server.handle_request(oidreq) 
+            end
+            render_response(oidresp)
           end
-          halt 400, "Bad request" unless oidreq
-
-          oidresp = nil
-          if oidreq.kind_of?(OpenID::Server::CheckIDRequest)
-            session[Hancock::SSO::SESSION_OID_REQ_KEY] = oidreq
-            session['openid_realm'] = params["openid.realm"]
-
-            ensure_authenticated
-            authorize_openid_request!
-
-            oidreq.identity = oidreq.claimed_id = url_for_user
-            oidresp = oidreq.answer(true, nil, oidreq.identity)
-            sreg_data = session[SESSION_USER_INFO_KEY]
-            
-            oidresp.add_extension(OpenID::SReg::Response.new(sreg_data))
-          else # associate
-            oidresp = server.handle_request(oidreq) 
-          end
-          render_response(oidresp)
         end
       end
     end
