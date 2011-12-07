@@ -47,7 +47,11 @@ module Hancock
 
         app.get '/sso/logout' do
           session.clear
-          redirect "/?logged_out=true"
+          if params[:return_to]
+            redirect params[:return_to]
+          else
+            redirect "/?logged_out=true"
+          end
         end
       end
     end
